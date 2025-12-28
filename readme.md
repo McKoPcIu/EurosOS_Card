@@ -1,3 +1,7 @@
+<a href="https://buycoffee.to/kopciu" target="_blank" rel="noopener noreferrer">
+  <img src="https://kopciu.info/coffee.png" alt="BuyCoffee.to – Postaw kawę">
+</a>
+
 # EurosOS Card
 
 Custom Lovelace card dla wizualizacji pompy ciepła Euros Energy / E-On.
