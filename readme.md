@@ -46,6 +46,11 @@ buf_temp: sensor.temp_zbiornika_buforowego
 ```
 > Konfiguracja dla integracji EurosOS, jeśli dane pobierasz inaczej - edytuj zmienne.
 
+## Wsparcie
+- Grupa E-On na FB: [Pompy Ciepła E.ON Air Euros Atmo DIY](https://www.facebook.com/groups/1068907574414311?locale=pl_PL)
+- Repozytorium GitHub: [Repozytorium](https://github.com/McKoPcIu/Euros_OS_Card)
+- Błędy i sugestie można zgłaszać bezpośrednio w GitHub.
+
 ## Licencja
 © Euros Energy Sp. z o.o. — wszystkie grafiki są własnością firmy. Kod udostępniany na licencji MIT.
 
