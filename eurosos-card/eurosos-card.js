@@ -1,3 +1,20 @@
+/**
+ * =============================================================================
+ * Euros OS Card – Home Assistant Custom Card
+ * =============================================================================
+ *
+ * File        : eurosos-card.js
+ * Author      : Patryk "KoPcIu" Kopeć
+ * GitHub      : https://github.com/McKoPcIu/EurosOS_Card
+ * Custom_Card : euros_os_card
+ * Version     : 0.1.1
+ *
+ * Description :
+ * Custom Home Assistant card for EurosEnergy and E.ON devices.
+ *
+ * =============================================================================
+ */
+
 import { LitElement, html, css } from 'https://unpkg.com/lit@2.7.2?module';
 
 class EurosOSCard extends LitElement {
@@ -8,14 +25,16 @@ class EurosOSCard extends LitElement {
 
   static assets = {
     bg: {
-      run_co:  `/local/eurosos-card/assets/bg-run-co.png`,
-      run_cwu: `/local/eurosos-card/assets/bg-run-cwu.png`,
-      idle:    `/local/eurosos-card/assets/bg-idle.png`,
+      run_co:       `/local/eurosos-card/assets/bg-run-co.png`,
+      run_cwu:      `/local/eurosos-card/assets/bg-run-cwu.png`,
+      run_co_def:   `/local/eurosos-card/assets/bg-run-co-def.png`,
+      run_cwu_def:  `/local/eurosos-card/assets/bg-run-cwu-def.png`,
+      idle:         `/local/eurosos-card/assets/bg-idle.png`,
     },
     icons: {
-      compressor: `/local/eurosos-card/assets/compressor.png`,
-      fan:        `/local/eurosos-card/assets/fan.png`,
-      pump:       `/local/eurosos-card/assets/pump.png`,
+      compressor:   `/local/eurosos-card/assets/compressor.png`,
+      fan:          `/local/eurosos-card/assets/fan.png`,
+      pump:         `/local/eurosos-card/assets/pump.png`,
     },
     fonts: {
       geogrotesque: `/local/eurosos-card/assets/Geogrotesque-Regular.woff2`,
@@ -43,7 +62,9 @@ class EurosOSCard extends LitElement {
       fluid_return_temp: 0.0,
       co_temp: 0.0,
       cwu_temp: 0.0,
-      buf_temp: 149.0
+      buf_temp: 149.0,
+      co_pressure: 149.0,
+      cwu_pressure: 149.0
     };
 
     const values = {};
@@ -56,10 +77,11 @@ class EurosOSCard extends LitElement {
 
     values['mode'] = this.config.mode && this.hass.states[this.config.mode] ? this.hass.states[this.config.mode].state : 'idle';
     values['cwu_pump_status'] = this.config.cwu_pump_status && this.hass.states[this.config.cwu_pump_status] ? this.hass.states[this.config.cwu_pump_status].state : 'off';
+    values['defrost'] = this.config.defrost && this.hass.states[this.config.defrost] ? this.hass.states[this.config.defrost].state : 'off';
 
     switch(values['mode']) {
-      case 'CO':  values['bg_mode'] = EurosOSCard.assets.bg.run_co; break;
-      case 'CWU': values['bg_mode'] = EurosOSCard.assets.bg.run_cwu; break;
+      case 'CO':  values['bg_mode'] = (values['defrost'] == 'on') ? EurosOSCard.assets.bg.run_co_def : EurosOSCard.assets.bg.run_co; break;
+      case 'CWU': values['bg_mode'] = (values['defrost'] == 'on') ? EurosOSCard.assets.bg.run_cwu_def : EurosOSCard.assets.bg.run_cwu; break;
       default:    values['bg_mode'] = EurosOSCard.assets.bg.idle; 
     }
 
@@ -103,6 +125,8 @@ class EurosOSCard extends LitElement {
           .fluid_return_temp { top: 50.3%; left: 49%; transform: translateX(-50%); }
           .heating_return_temp { top: 49.4%; left: 88%; transform: translateX(-50%); }
 
+          .defrost { top: 57.8%; left: 49.8%; transform: translateX(-50%); color: #886ce4; }
+
           .param-large { 
             position: absolute;
             font-size: 140%;
@@ -116,6 +140,8 @@ class EurosOSCard extends LitElement {
           .co_text { top: 75%; left: 70.5%; transform: translateX(-50%); font-weight: bold; }
           .cwu_temp { top: 80%; left: 21.5%; transform: translateX(-50%); }
           .co_temp { top: 80%; left: 70.5%; transform: translateX(-50%); }
+          .cwu_pressure { top: 87%; left: 21.5%; transform: translateX(-50%); }
+          .co_pressure { top: 87%; left: 70.5%; transform: translateX(-50%); }
 
           .footer {
             white-space: nowrap;
@@ -163,10 +189,15 @@ class EurosOSCard extends LitElement {
           <div class="param-small heating_return_temp">${values.heating_return_temp.toFixed(1)} °C</div>
           <div class="param-small fluid_return_temp">${values.fluid_return_temp.toFixed(1)} °C</div>
 
+          <div class="param-small defrost">${values.defrost == 'on' ? 'DEFROST' : ''}</div>
+
           <div class="param-large cwu_text">CWU</div>
           <div class="param-large co_text">${values.buf_temp < 120.0 ? 'Bufor CO' : 'CO'}</div>
           <div class="param-large cwu_temp">${values.cwu_temp.toFixed(1)} °C</div>
           <div class="param-large co_temp">${values.buf_temp < 120.0 ? values.buf_temp.toFixed(1) : values.co_temp.toFixed(1)} °C</div>
+
+          <div class="param-large cwu_pressure">${values.cwu_pressure < 120.0 ? `${values.cwu_pressure.toFixed(1)} bar` : ''}</div>
+          <div class="param-large co_pressure">${values.co_pressure < 120.0 ? `${values.co_pressure.toFixed(1)} bar` : ''}</div>
 
           <img class="icon icon-fan ${values.fan_speed ? 'spin' : '' }" src="${EurosOSCard.assets.icons.fan}" />
           <img class="icon icon-compressor ${values.compressor ? 'spin' : '' }" src="${EurosOSCard.assets.icons.compressor}" />
